@@ -1,0 +1,14 @@
+<div id="issue-{{issue_no}}">
+  <div class="issue-block issue-sev-{{issue.issue_severity|lower}}">
+      <b>{{issue.test_name|replace('_', ' ')|capitalize}}:</b> {{issue.issue_text}}<br>
+      <b>Test ID:</b> {{issue.test_id}}<br>
+      <b>Severity:</b> {{issue.issue_severity}}<br>
+      <b>Confidence:</b> {{issue.issue_confidence}}<br>
+      <b>File: </b><a href="{{issue.filename}}" target="_blank">{{issue.filename}}</a><br>
+      {% set url = issue.test_id|get_bandit_url %}
+      {% if url %}<b>More info: </b><a href="{{url}}" target="_blank">{{url}}</a><br>{% endif %}
+    <div class="code">
+      <pre>{{issue.code|show_code}}</pre>
+    </div>
+  </div>
+</div>

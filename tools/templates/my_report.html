@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Bandit Super Report{% endblock %}
+{% block head %}{% endblock %}
+{% block metrics %}<div id="metrics">
+    <div class="metrics-box bordered-box">
+      <div class="metrics-title">Metrics:</div>
+      Total lines of code: <span id="loc">{{metrics['_totals']['loc']}}</span><br>
+      Total lines skipped (#nosec): <span id="nosec">{{metrics['_totals']['nosec']}}</span><br>
+      Total Confidence:
+        <span id="confidence-low">{{metrics['_totals']['CONFIDENCE.LOW']}}</span> /
+        <span id="confidence-medium">{{metrics['_totals']['CONFIDENCE.MEDIUM']}}</span> /
+        <span id="confidence-high">{{metrics['_totals']['CONFIDENCE.HIGH']}}</span><br>
+      Total Severity:
+        <span id="severity-low">{{metrics['_totals']['SEVERITY.LOW']}}</span> /
+        <span id="severity-medium">{{metrics['_totals']['SEVERITY.MEDIUM']}}</span> /
+        <span id="severity-high">{{metrics['_totals']['SEVERITY.HIGH']}}</span><br>
+    </div>
+  </div>{% endblock %}
+{% block skipped %}<div id="skipped">
+    <div class="skipped-box bordered-box">
+      <div class="skipped-title">Skipped files:</div>{% for issue in errors %}
+      {{issue.filename}} <b>reason:</b> {{issue.reason}}<br>{% endfor %}
+    </div>
+  </div>{% endblock %}
+{% block results %}{% for issue in results %}
+  {% set issue_no = loop.index %}
+  {% include "issue.html" %}
+{% endfor %}{% endblock %}
