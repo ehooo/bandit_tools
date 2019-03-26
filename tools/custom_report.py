@@ -8,6 +8,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 BASE_DIR = os.path.abspath(os.path.dirname(__name__))
 CODE_LINE = re.compile(r'(\d+) *(\w+|#|\'|\")')
+VALID_BASE_URI = re.compile(r'^((https?|file)://|/)')
 
 
 def get_bandit_url(value):
@@ -54,7 +55,7 @@ if __name__ == '__main__':
                         help="The template path where files will be storage")
     parser.add_argument("-t", "--template", dest="template", type=str, default='my_report.html',
                         help="Template to render by default my_report.html")
-    parser.add_argument("-b", "--base", dest="base_uri", type=str, default=None,
+    parser.add_argument("-b", "--base", dest="base_uri", type=str, default='',
                         help="The URI for add on the base html tag")
 
     options = vars(parser.parse_args())
@@ -92,11 +93,20 @@ if __name__ == '__main__':
     env.filters['show_code'] = show_code
     template = env.get_template(template_file)
 
+    base_uri = options.get('base_uri')
+    if not VALID_BASE_URI.match(base_uri):
+        base_uri = ''
+    else:
+        if not base_uri.endswith('/'):
+            base_uri += '/'
+        if base_uri.startswith('/'):
+            base_uri = 'file://' + base_uri
+
     stdout = sys.stdout
     if options.get('output'):
         stdout = open(options.get('output'), 'w')
 
-    report = template.render(**report_json)
+    report = template.render(base_uri=base_uri, **report_json)
     stdout.write(report)
     if options.get('output'):
         stdout.close()

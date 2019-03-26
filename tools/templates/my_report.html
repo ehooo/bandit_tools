@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Bandit Super Report{% endblock %}
-{% block head %}{% endblock %}
+{% block head %}{% if base_uri %}<base href = "{{base_uri}}"/>{% endif %}{% endblock %}
 {% block metrics %}<div id="metrics">
     <div class="metrics-box bordered-box">
       <div class="metrics-title">Metrics:</div>
