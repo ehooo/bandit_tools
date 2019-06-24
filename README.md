@@ -1,5 +1,5 @@
-# bandit_tools
-List of apps designed to help Banit users
+# Bandit Tools [![Build Status](https://travis-ci.org/ehooo/bandit_tools.svg)](https://travis-ci.org/ehooo/bandit_tools)
+List of apps designed to help Bandit users
 
 ## custom_report.py
 ```
