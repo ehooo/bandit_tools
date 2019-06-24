@@ -41,6 +41,7 @@ class BanditReport(object):
         self._metrics = {}
         self._hist = {}
         self._hist_hash = []
+        self.use_mix_data = True
 
     @staticmethod
     def get_hash(hit_data):
@@ -90,7 +91,7 @@ class BanditReport(object):
         if filename in self._metrics:
             lines = bool(self._metrics[filename]['loc'] != lines_of_code)
             nosec = bool(self._metrics[filename]['nosec'] != num_nosec)
-            if lines or nosec:
+            if not self.use_mix_data and (lines or nosec):
                 raise IndentationError('The file has been entered before with other data')
             return
         self._metrics[filename] = BASE_DICT.copy()

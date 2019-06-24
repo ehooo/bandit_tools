@@ -87,7 +87,7 @@ if __name__ == '__main__':
 
     env = Environment(
         loader=FileSystemLoader(loader_fs),
-        autoescape=select_autoescape(['html']),
+        autoescape=select_autoescape(['html', 'jinja2', 'j2']),
     )
     env.filters['get_bandit_url'] = get_bandit_url
     env.filters['show_code'] = show_code
