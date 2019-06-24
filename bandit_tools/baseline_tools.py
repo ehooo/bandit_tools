@@ -1,5 +1,23 @@
+# -*- coding: utf-8 -*-
+"""
+Copyright 2019 Victor Torre
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+import argparse
 import json
+import sys
 import hashlib
 import datetime
 import operator
@@ -116,10 +134,7 @@ def mix_report(base, other):
     return generator.to_dict()
 
 
-if __name__ == '__main__':
-    import argparse
-    import sys
-
+def main():
     parser = argparse.ArgumentParser(description='Tool for Bandit baseline')
 
     parser.add_argument("baseline", type=str, nargs=1,
@@ -164,3 +179,7 @@ if __name__ == '__main__':
     stdout.write(json_str)
     if options.get('output'):
         stdout.close()
+
+
+if __name__ == '__main__':  # pragma: no cover
+    main()

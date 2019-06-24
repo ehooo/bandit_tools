@@ -1,4 +1,22 @@
+# -*- coding: utf-8 -*-
+"""
+Copyright 2019 Victor Torre
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+import argparse
+import sys
 import json
 import os
 import re
@@ -6,15 +24,20 @@ import re
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 
-BASE_DIR = os.path.abspath(os.path.dirname(__name__))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CODE_LINE = re.compile(r'(\d+) *(\w+|#|\'|\")')
 VALID_BASE_URI = re.compile(r'^((https?|file)://|/)')
+
+BANDIT_URLS = {}  # To fix bug https://github.com/PyCQA/bandit/issues/506
 
 
 def get_bandit_url(value):
     try:
         from bandit.core.docs_utils import get_url
-        return get_url(value)
+        global BANDIT_URLS
+        if value not in BANDIT_URLS:
+            BANDIT_URLS[value] = get_url(value)
+        return BANDIT_URLS[value]
     except ImportError:
         return ''
 
@@ -38,10 +61,7 @@ def show_code(value, num_space=4):
     return '\n'.join(lines)
 
 
-if __name__ == '__main__':
-    import argparse
-    import sys
-
+def main():
     parser = argparse.ArgumentParser(
         description='Tool for Bandit Custom HTML report\n'
                     'This tools allows to create a customize HTML Bandit from json one'
@@ -60,7 +80,11 @@ if __name__ == '__main__':
 
     options = vars(parser.parse_args())
 
-    report_json = json.load(open(options.get('report')[0]))
+    report_file = options.get('report')[0]
+    if not os.path.isfile(report_file):
+        parser.exit(-1, "File {} not found".format(report_file))
+
+    report_json = json.load(open(report_file))
 
     loader_fs = []
 
@@ -81,9 +105,7 @@ if __name__ == '__main__':
                 valid_file = True
                 break
         if not valid_file:
-            parser.print_help()
-            print("File {} not found".format(template_file))
-            exit(-1)
+            parser.exit(-2, "File {} not found".format(template_file))
 
     env = Environment(
         loader=FileSystemLoader(loader_fs),
@@ -110,3 +132,7 @@ if __name__ == '__main__':
     stdout.write(report)
     if options.get('output'):
         stdout.close()
+
+
+if __name__ == '__main__':  # pragma: no cover
+    main()
