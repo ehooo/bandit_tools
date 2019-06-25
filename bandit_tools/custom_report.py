@@ -129,7 +129,7 @@ def main():
         stdout = open(options.get('output'), 'w')
 
     report = template.render(base_uri=base_uri, **report_json)
-    stdout.write(report.encode('utf8'))
+    stdout.write(str(report.encode('utf8')))
     if options.get('output'):
         stdout.close()
 
