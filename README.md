@@ -44,4 +44,9 @@ optional arguments:
   -o OUTPUT, --output OUTPUT
                         output file
 ```
+* `--fix`
+
+The fix option will be recalculate the "_total" field on "metrics"
+and order the "results" field.
+
 

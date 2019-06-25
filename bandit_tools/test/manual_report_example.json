@@ -1,0 +1,101 @@
+{
+  "errors": [
+    {
+      "filename": "examples/new_candidates-none.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "examples/nonsense.py",
+      "reason": "syntax error while parsing AST from file"
+    },
+    {
+      "filename": "examples/nonsense2.py",
+      "reason": "exception while scanning file"
+    },
+    {
+      "filename": "examples/sql_statements-py36.py",
+      "reason": "syntax error while parsing AST from file"
+    }
+  ],
+  "generated_at": "",
+  "metrics": {
+    "_totals": {
+      "CONFIDENCE.HIGH": 389,
+      "CONFIDENCE.LOW": 9,
+      "CONFIDENCE.MEDIUM": 80,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 111,
+      "SEVERITY.LOW": 141,
+      "SEVERITY.MEDIUM": 226,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 1124,
+      "nosec": 21
+    },
+    "examples/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 0,
+      "nosec": 0
+    },
+    "examples/assert.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 1,
+      "nosec": 0
+    },
+    "examples/binding.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 4,
+      "nosec": 0
+    }
+  },
+  "results": [
+    {
+      "code": "3 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n4 s.bind(('0.0.0.0', 31137))\n5 s.bind(('192.168.0.1', 8080))\n",
+      "filename": "examples/binding.py",
+      "issue_confidence": "MEDIUM",
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible binding to all interfaces.",
+      "line_number": 4,
+      "line_range": [
+        4
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/latest/plugins/b104_hardcoded_bind_all_interfaces.html",
+      "test_id": "B104",
+      "test_name": "hardcoded_bind_all_interfaces"
+    },
+    {
+      "code": "1 assert True\n",
+      "filename": "examples/assert.py",
+      "issue_confidence": "HIGH",
+      "issue_severity": "LOW",
+      "issue_text": "Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.",
+      "line_number": 1,
+      "line_range": [
+        1
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/latest/plugins/b101_assert_used.html",
+      "test_id": "B101",
+      "test_name": "assert_used"
+    }
+  ]
+}
