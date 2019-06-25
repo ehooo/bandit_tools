@@ -67,7 +67,10 @@ def test_main_no_args(monkeypatch):
         bandit_tools.custom_report.main()
     assert len(exit_mock.CALL_ARGS) == 2
     assert exit_mock.CALL_ARGS[0] == 2
-    assert exit_mock.CALL_ARGS[1].endswith('error: the following arguments are required: report\n')
+    expected_msg = 'the following arguments are required: report'
+    if sys.version_info.major == 2:
+        expected_msg = 'too few arguments'
+    assert exit_mock.CALL_ARGS[1].endswith('error: {}\n'.format(expected_msg))
     assert exit_mock.CALL_KWARGS == {}
 
 
@@ -126,8 +129,6 @@ def test_main_with_path_but_no_template(monkeypatch):
 
 def test_main_with_base_url(monkeypatch):
     out_file = os.path.join(BASE_PATH, 'test_report.html')
-    if os.path.isfile(out_file):
-        os.remove(out_file)
     monkeypatch.setattr(sys, "argv", ['app.py', os.path.join(BASE_PATH, 'report_example.json'),
                                       '--path', os.path.join(BASE_PATH, '..', 'templates'),
                                       '--base', 'http://localhost/',
@@ -142,8 +143,6 @@ def test_main_with_base_url(monkeypatch):
 
 def test_main_with_base_url_without_slash(monkeypatch):
     out_file = os.path.join(BASE_PATH, 'test_report.html')
-    if os.path.isfile(out_file):
-        os.remove(out_file)
     monkeypatch.setattr(sys, "argv", ['app.py', os.path.join(BASE_PATH, 'report_example.json'),
                                       '--path', os.path.join(BASE_PATH, '..', 'templates'),
                                       '--base', 'http://localhost',
@@ -158,8 +157,6 @@ def test_main_with_base_url_without_slash(monkeypatch):
 
 def test_main_with_base_url_file(monkeypatch):
     out_file = os.path.join(BASE_PATH, 'test_report.html')
-    if os.path.isfile(out_file):
-        os.remove(out_file)
     monkeypatch.setattr(sys, "argv", ['app.py', os.path.join(BASE_PATH, 'report_example.json'),
                                       '--path', os.path.join(BASE_PATH, '..', 'templates'),
                                       '--base', '/localhost/',
