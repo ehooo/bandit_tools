@@ -2,6 +2,7 @@
 List of apps designed to help Bandit users
 
 ## custom_report.py
+`python -m bandit_tools.custom_report`
 ```
 usage: custom_report.py [-h] [-o OUTPUT] [-p TEMPLATE_PATH] [-t TEMPLATE]
                         [-b BASE_URI]
@@ -26,6 +27,7 @@ optional arguments:
 ```
 
 ## baseline_tools.py
+`python -m bandit_tools.baseline_tools`
 ```
 usage: baseline_tools.py [-h] [-z] [-f] [-M] [-m MIXED] [-o OUTPUT] baseline
 
@@ -49,4 +51,9 @@ optional arguments:
 The fix option will be recalculate the "_total" field on "metrics"
 and order the "results" field.
 
+* `--mix`
+
+The mix option will be recived a second `report.json` and
+calculate the new file with `baseline + report.json`
+so new "_total" field on "metrics" will be created with proper information
 
