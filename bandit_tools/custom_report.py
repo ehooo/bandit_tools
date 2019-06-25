@@ -129,7 +129,9 @@ def main():
         stdout = open(options.get('output'), 'w')
 
     report = template.render(base_uri=base_uri, **report_json)
-    stdout.write(str(report.encode('utf8')))
+    if sys.version_info.major == 2:
+        report = report.encode('utf8')
+    stdout.write(report)
     if options.get('output'):
         stdout.close()
 
