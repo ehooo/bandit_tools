@@ -1,9 +1,30 @@
+# -*- coding: utf-8 -*-
+"""
+Copyright 2019 Victor Torre
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+import argparse
 import json
+import os
+import sys
 import hashlib
 import datetime
 import operator
+import re
 
+CODE_LINE = re.compile(r'(\d+) *(\w+|#|\'|\")')
 TS_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 BASE_DICT = {
     "loc": 0,  # Lines Of Code
@@ -33,6 +54,26 @@ def zip_report(report):
     return zip_baseline
 
 
+def filter_code(value):
+    lines = []
+    tab = ' '
+    for line in value.split('\n'):
+        line = line.replace('\t', ' ')
+        m = CODE_LINE.match(line)
+        if m:
+            (num, word) = m.groups()
+            pos = line.find(word)
+            code = line[pos:]
+            line = tab
+            line += code
+            lines.append(line)
+        else:
+            lines.append(line)
+
+    code = '\n'.join(lines)
+    return code.encode('utf8')
+
+
 class BanditReport(object):
 
     def __init__(self):
@@ -47,9 +88,11 @@ class BanditReport(object):
     def get_hash(hit_data):
         h = hashlib.md5()
         keys = hit_data.keys()
-        sorted(keys)
-        for key in keys:
-            h.update(str(hit_data[key]))
+        for key in sorted(keys):
+            if key not in ['code', 'line_number', 'line_range']:
+                h.update(hit_data[key].encode('utf8'))
+            if key == 'code':
+                h.update(filter_code(hit_data[key]))
         return h.hexdigest()
 
     @property
@@ -92,7 +135,7 @@ class BanditReport(object):
             lines = bool(self._metrics[filename]['loc'] != lines_of_code)
             nosec = bool(self._metrics[filename]['nosec'] != num_nosec)
             if not self.use_mix_data and (lines or nosec):
-                raise IndentationError('The file has been entered before with other data')
+                raise ValueError('The file has been entered before with other data')
             return
         self._metrics[filename] = BASE_DICT.copy()
         self._metrics[filename]['loc'] = lines_of_code
@@ -116,10 +159,7 @@ def mix_report(base, other):
     return generator.to_dict()
 
 
-if __name__ == '__main__':
-    import argparse
-    import sys
-
+def main():
     parser = argparse.ArgumentParser(description='Tool for Bandit baseline')
 
     parser.add_argument("baseline", type=str, nargs=1,
@@ -135,10 +175,16 @@ if __name__ == '__main__':
 
     options = vars(parser.parse_args())
 
-    baseline = json.load(open(options.get('baseline')[0]))
+    valid_file = options.get('baseline', [""])[0]
+    if not os.path.isfile(valid_file):
+        parser.exit(-2, "File {} not found".format(valid_file))
+    baseline = json.load(open(valid_file))
 
-    if options.get('mixed'):
-        mixed_to = json.load(open(options.get('mixed')))
+    valid_file = options.get('mixed')
+    if valid_file:
+        if not os.path.isfile(valid_file):
+            parser.exit(-3, "File {} not found".format(valid_file))
+        mixed_to = json.load(open(valid_file))
         baseline = mix_report(baseline, mixed_to)
 
     if options.get('zip'):
@@ -164,3 +210,7 @@ if __name__ == '__main__':
     stdout.write(json_str)
     if options.get('output'):
         stdout.close()
+
+
+if __name__ == '__main__':  # pragma: no cover
+    main()
