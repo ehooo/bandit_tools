@@ -4,7 +4,7 @@ List of apps designed to help Bandit users
 ## custom_report.py
 `python -m bandit_tools.custom_report`
 ```
-usage: custom_report.py [-h] [-o OUTPUT] [-p TEMPLATE_PATH] [-t TEMPLATE]
+usage: bandit_custom_report [-h] [-o OUTPUT] [-p TEMPLATE_PATH] [-t TEMPLATE]
                         [-b BASE_URI]
                         report
 
@@ -29,7 +29,7 @@ optional arguments:
 ## baseline_tools.py
 `python -m bandit_tools.baseline_tools`
 ```
-usage: baseline_tools.py [-h] [-z] [-f] [-M] [-m MIXED] [-o OUTPUT] baseline
+usage: baseline_tools [-h] [-z] [-f] [-M] [-m MIXED] [-o OUTPUT] baseline
 
 Tool for Bandit baseline
 
@@ -57,3 +57,6 @@ The mix option will be recived a second `report.json` and
 calculate the new file with `baseline + report.json`
 so new "_total" field on "metrics" will be created with proper information
 
+### KNOWN ISSUES
+If you have the same risky code on two lines in the same file, the `--mix`
+option will be remove one of them, cause it is detected as duplicated hit. 

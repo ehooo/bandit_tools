@@ -83,16 +83,20 @@ class BanditReport(object):
         self._hist = {}
         self._hist_hash = []
         self.use_mix_data = True
+        self.ignore_lines = True
 
     @staticmethod
-    def get_hash(hit_data):
+    def get_hash(hit_data, ignore_lines=True):
         h = hashlib.md5()
         keys = hit_data.keys()
         for key in sorted(keys):
-            if key not in ['code', 'line_number', 'line_range']:
-                h.update(hit_data[key].encode('utf8'))
             if key == 'code':
                 h.update(filter_code(hit_data[key]))
+            elif key in ['line_number', 'line_range']:
+                if not ignore_lines:
+                    h.update(str(hit_data[key]).encode('utf8'))
+            else:
+                h.update(hit_data[key].encode('utf8'))
         return h.hexdigest()
 
     @property
@@ -115,7 +119,7 @@ class BanditReport(object):
         }
 
     def add_hit(self, result):
-        hit_hash = BanditReport.get_hash(result)
+        hit_hash = BanditReport.get_hash(result, self.ignore_lines)
         if hit_hash in self._hist_hash:
             return
         self._hist_hash.append(hit_hash)
@@ -159,6 +163,19 @@ def mix_report(base, other):
     return generator.to_dict()
 
 
+def fix(report):
+    generator = BanditReport()
+    generator.ignore_lines = False
+    for filename in report['metrics']:
+        if filename != "_totals":
+            lines_of_code = report['metrics'][filename]['loc']
+            num_nosec = report['metrics'][filename]['nosec']
+            generator.add_file(filename, lines_of_code, num_nosec)
+    for hit in report['results']:
+        generator.add_hit(hit)
+    return generator.to_dict()
+
+
 def main():
     parser = argparse.ArgumentParser(description='Tool for Bandit baseline')
 
@@ -191,14 +208,7 @@ def main():
         baseline = zip_report(baseline)
 
     if options.get('fix'):
-        _totals = BASE_DICT.copy()
-        for filename in baseline["metrics"]:
-            if filename != '_totals':
-                for key in baseline["metrics"][filename]:
-                    _totals[key] += baseline["metrics"][filename][key]
-
-        baseline["metrics"]['_totals'] = _totals
-        baseline['results'] = sorted(baseline['results'], key=operator.itemgetter('filename'))
+        baseline = fix(baseline)
 
     indent = None if options.get('machine') else 2
     json_str = json.dumps(baseline, sort_keys=True, indent=indent, separators=(',', ': '))
