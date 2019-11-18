@@ -48,7 +48,7 @@ setuptools.setup(
     entry_points={
         "console_scripts": [
             "baseline_tools=bandit_tools.baseline_tools:main",
-            "custom_report=bandit_tools.custom_report:main",
+            "bandit_custom_report=bandit_tools.custom_report:main",
         ]
     },
 )
